@@ -18,6 +18,8 @@ public class MemberLoginService {
         memberLoginRepository.save(memberLogin);
     }
 //    TODO: login check 하는 거를 만들거 findByMember
-
+    public Member findByMember(Long memberId){
+        return null;
+    }
 
 }
