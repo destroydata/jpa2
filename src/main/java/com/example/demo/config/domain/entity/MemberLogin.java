@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class MemberLogin {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
     private LocalDateTime createAt;
     private LocalDateTime endAt;

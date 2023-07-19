@@ -18,6 +18,6 @@ public class Todo {
     private String content;
     private boolean isDone;
     private Integer likeCount;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 }

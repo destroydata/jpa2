@@ -107,7 +107,7 @@ class MemberServiceTest {
         List<MemberLogin> all = memberLoginRepository.findAll();
         assertThat(all).hasSize(1);
 //        5
-//        assertThat(all.get(0).getMember()).isEqualTo(member);
+//        assertThat(all.get(0).getMember()).isEqual72To(member);
         assertThat(all.get(0).getCreateAt()).isBefore(LocalDateTime.now());
         assertThat(all.get(0).getEndAt()).isAfter(LocalDateTime.now());
     }
