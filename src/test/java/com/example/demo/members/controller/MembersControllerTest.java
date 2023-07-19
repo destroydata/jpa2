@@ -1,10 +1,12 @@
 package com.example.demo.members.controller;
 
 import com.example.demo.config.domain.entity.MemberLogin;
+import com.example.demo.config.exception.ExistEmailException;
 import com.example.demo.config.exception.LoginFailException;
 import com.example.demo.config.repository.MemberLoginRepository;
 import com.example.demo.members.domain.entity.Member;
 import com.example.demo.members.domain.request.LoginRequest;
+import com.example.demo.members.domain.request.SignupRequest;
 import com.example.demo.members.domain.response.LoginResponse;
 import com.example.demo.members.repository.MemberRepository;
 import com.example.demo.members.service.MemberService;
@@ -75,7 +77,7 @@ class MembersControllerTest {
         // given
         LoginRequest loginRequest = new LoginRequest(email+"111", password);
         Mockito.when(memberService.login(ArgumentMatchers.any(LoginRequest.class)))
-                .thenThrow(LoginFailException.class);
+                .thenThrow(new LoginFailException("aaa"));
 
         // when & then
         mockMvc.perform(
@@ -85,6 +87,41 @@ class MembersControllerTest {
                 )
                 .andExpect(
                         status().isBadRequest());
+    }
+    @Test
+    void 가입_성공() throws Exception {
+        SignupRequest signupRequest =
+                new SignupRequest(email+"111", password,"name",10);
+        Mockito.doNothing()
+                .when(memberService)
+                .insert(ArgumentMatchers.any(SignupRequest.class));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/members/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(signupRequest))
+                )
+                .andExpect(
+                        status().isCreated());
+    }
+
+    @Test
+    void 가입_실패() throws Exception {
+        SignupRequest signupRequest =
+                new SignupRequest(email+"111", password,"name",10);
+        Mockito.doThrow(new ExistEmailException("있는 거"))
+                .when(memberService)
+                .insert(ArgumentMatchers.any(SignupRequest.class));
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/members/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(signupRequest))
+                )
+                .andExpect(
+                        status().isBadRequest())
+                .andExpect(
+                        MockMvcResultMatchers
+                                .content()
+                                .string("있는 거"));
     }
 
 

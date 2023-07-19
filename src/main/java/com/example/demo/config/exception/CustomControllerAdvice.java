@@ -12,4 +12,9 @@ public class CustomControllerAdvice {
     public String loginFailExceptionHandler(LoginFailException e){
         return e.getMessage();
     }
+    @ExceptionHandler(ExistEmailException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String existEmailExceptionHandler(ExistEmailException e){
+        return e.getMessage();
+    }
 }

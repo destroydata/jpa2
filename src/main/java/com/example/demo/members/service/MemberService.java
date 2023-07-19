@@ -1,6 +1,7 @@
 package com.example.demo.members.service;
 
 import com.example.demo.config.domain.entity.MemberLogin;
+import com.example.demo.config.exception.ExistEmailException;
 import com.example.demo.config.exception.LoginFailException;
 import com.example.demo.config.service.MemberLoginService;
 import com.example.demo.members.domain.entity.Member;
@@ -21,7 +22,7 @@ public class MemberService {
 
     public void insert(SignupRequest request){
         Optional<Member> byEmail = memberRepository.findByEmail(request.email());
-        if(byEmail.isPresent()) throw new RuntimeException("있는 거");
+        if(byEmail.isPresent()) throw new ExistEmailException("있는 거");
         memberRepository.save(request.toEntity());
     }
 
