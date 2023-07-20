@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,14 +44,22 @@ public class MembersController {
     }
 
     @GetMapping
-    public Page<MemberResponse> getAll(
+    public Map<String , Object> getAll(
             @RequestParam(required = false, defaultValue = "0", name = "page")
             Integer page,
             @RequestParam(required = false, defaultValue = "3", name = "size")
             Integer size
     ){
-//        if(member == null) init();
-        return service.findAll(PageRequest.of(page, size));
-    }
+        Page<MemberResponse> all = service.findAll(PageRequest.of(page, size));
+        long totalElements = all.getTotalElements();
+        int totalPages = all.getTotalPages();
+        List<MemberResponse> content = all.getContent();
+        Map<String , Object> map = new HashMap<>();
+        map.put("totalElements",totalElements);
+        map.put("totalPages",totalPages);
+        map.put("content",content);
+        return map;
 
+
+    }
 }

@@ -24,10 +24,15 @@ public class MemberLoginService {
         // 2. 가장 최근것이 빠져나오냐?
 // 3. 없으면 에러발생
         Optional<MemberLogin> byMemberId =
-                memberLoginRepository.findFirstByMemberIdOrderByEndAtDesc(memberId);
-        return byMemberId
-                .orElseThrow(()-> new RuntimeException("로그인 상태가 아닙니다."))
-                .getMember();
+                memberLoginRepository
+                        .findFirstByMemberIdAndEndAtAfterOrderByEndAtDesc(
+                                memberId, LocalDateTime.now());
+        MemberLogin memberLogin = byMemberId
+                .orElseThrow(() -> new RuntimeException("로그인 상태가 아닙니다."));
+        if (memberLogin.getEndAt().isBefore(LocalDateTime.now()))
+            throw new RuntimeException("로그인 상태가 아닙니다.");
+        Member member = memberLogin.getMember();
+        return member;
     }
 
 }

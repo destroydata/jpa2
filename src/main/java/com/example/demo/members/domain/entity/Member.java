@@ -4,10 +4,9 @@ package com.example.demo.members.domain.entity;
 import com.example.demo.config.domain.entity.MemberLogin;
 import com.example.demo.todos.domain.entity.Todo;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -15,6 +14,7 @@ import java.util.List;
 @Table(name = "members")
 @Getter @AllArgsConstructor
 @NoArgsConstructor @Builder
+@ToString(of = {"id","email", "password"})
 public class Member{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
