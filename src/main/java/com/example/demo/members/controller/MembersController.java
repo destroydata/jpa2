@@ -1,6 +1,7 @@
 package com.example.demo.members.controller;
 
 
+import com.example.demo.config.aspect.TokenRequired;
 import com.example.demo.config.domain.entity.MemberLogin;
 import com.example.demo.config.repository.MemberLoginRepository;
 import com.example.demo.members.domain.entity.Member;
@@ -29,7 +30,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
 public class MembersController {
-
     private final MemberService service;
     @PostMapping("/login")
     public LoginResponse login(
@@ -44,6 +44,7 @@ public class MembersController {
     }
 
     @GetMapping
+    @TokenRequired
     public Map<String , Object> getAll(
             @RequestParam(required = false, defaultValue = "0", name = "page")
             Integer page,
@@ -59,7 +60,12 @@ public class MembersController {
         map.put("totalPages",totalPages);
         map.put("content",content);
         return map;
-
-
+    }
+    @GetMapping("test")
+    @TokenRequired
+    public Map<String , Object> test(
+            @RequestHeader("Authorization") String token
+    ){
+        return service.getTokenToData(token.replace("Bearer ",""));
     }
 }
