@@ -13,6 +13,10 @@ import com.example.demo.members.repository.MemberRepository;
 import com.example.demo.members.service.MemberService;
 import com.example.demo.todos.domain.entity.Todo;
 import com.example.demo.todos.repository.TodoRepository;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,11 @@ import java.util.Map;
 public class MembersController {
     private final MemberService service;
     @PostMapping("/login")
+    @ApiResponses({
+            @ApiResponse(description = "성공", responseCode = "200"),
+            @ApiResponse(description = "실패", responseCode = "400")
+    })
+    @Operation(description = "로그인", summary = "login")
     public LoginResponse login(
             @RequestBody LoginRequest loginRequest){
         return service.login(loginRequest);
