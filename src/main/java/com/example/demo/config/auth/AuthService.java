@@ -30,9 +30,9 @@ public class AuthService {
         return compact;
     }
     public Map<String, Object> getClaims(String token){
-        SecretKeySpec key = getKey();
+//        SecretKeySpec key = getKey();
         return (Claims) Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(secretKey.getBytes())
                 .build()
                 .parse(token)
                 .getBody();

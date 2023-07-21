@@ -11,3 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+
+jwt:
+  secret: secret-s--ssss-s-p-d--c-b--g--f--dsakey

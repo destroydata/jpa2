@@ -19,10 +19,9 @@ import java.net.http.HttpHeaders;
 
 @Aspect
 @RequiredArgsConstructor
+@Component
 public class AuthAspect {
-
     private final AuthService authService;
-
     @Before("@annotation(TokenRequired)")
     public void checkToken(){
         ServletRequestAttributes request =

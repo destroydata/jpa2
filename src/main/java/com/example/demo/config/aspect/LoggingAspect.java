@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Aspect
+@Component
 public class LoggingAspect {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -50,15 +51,15 @@ public class LoggingAspect {
 //        return proceed;
 //    }
 
-    @Around("@annotation(org.springframework.stereotype.Service)")
-    public Object loggingAround2(ProceedingJoinPoint point) throws Throwable {
-        long startTime = new Date().getTime();
-        log.info("start : " + point.getSignature().getName()
-                + ", " + point.getSignature().getDeclaringTypeName());
-        Object proceed = point.proceed();
-        log.info("after : " + point.getSignature().getName()
-                + ", " + point.getSignature().getDeclaringTypeName());
-        log.info("ms : " + (new Date().getTime() - startTime));
-        return proceed;
-    }
+//    @Around("@annotation(org.springframework.stereotype.Service)")
+//    public Object loggingAround2(ProceedingJoinPoint point) throws Throwable {
+//        long startTime = new Date().getTime();
+//        log.info("start : " + point.getSignature().getName()
+//                + ", " + point.getSignature().getDeclaringTypeName());
+//        Object proceed = point.proceed();
+//        log.info("after : " + point.getSignature().getName()
+//                + ", " + point.getSignature().getDeclaringTypeName());
+//        log.info("ms : " + (new Date().getTime() - startTime));
+//        return proceed;
+//    }
 }
