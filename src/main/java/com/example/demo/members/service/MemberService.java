@@ -1,6 +1,7 @@
 package com.example.demo.members.service;
 
 import com.example.demo.config.auth.AuthService;
+import com.example.demo.config.domain.dto.MemberDto;
 import com.example.demo.config.domain.entity.MemberLogin;
 import com.example.demo.config.exception.ExistEmailException;
 import com.example.demo.config.exception.LoginFailException;
@@ -51,4 +52,5 @@ public class MemberService {
     public Map<String, Object> getTokenToData(String token){
         return authService.getClaims(token);
     }
+
 }

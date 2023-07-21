@@ -10,6 +10,13 @@ public class MemberDto {
     private String name;
     private Integer age;
 
+    public MemberDto(Long id, String email, String name, Integer age) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.age = age;
+    }
+
     public MemberDto(Member member) {
         this.id = member.getId();
         this.email = member.getEmail();

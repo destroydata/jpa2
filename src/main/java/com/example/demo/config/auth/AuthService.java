@@ -1,6 +1,7 @@
 package com.example.demo.config.auth;
 
 
+import com.example.demo.config.domain.dto.MemberDto;
 import com.example.demo.members.domain.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,11 +32,17 @@ public class AuthService {
     }
     public Map<String, Object> getClaims(String token){
 //        SecretKeySpec key = getKey();
+
         return (Claims) Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())
                 .build()
                 .parse(token)
                 .getBody();
+    }
+    public MemberDto tokenToMemberDto(String token){
+        Map<String, Object> tokenToData = getClaims(token);
+        MemberDto memberDto = new MemberDto((Long) tokenToData.get("memberId"),  null, (String) tokenToData.get("name"), (Integer) tokenToData.get("age"));
+        return memberDto;
     }
 
     private SecretKeySpec getKey() {

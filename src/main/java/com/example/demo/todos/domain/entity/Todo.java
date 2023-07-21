@@ -20,4 +20,7 @@ public class Todo {
     private Integer likeCount;
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+    public void changeIsDone(){
+        isDone = !isDone;
+    }
 }

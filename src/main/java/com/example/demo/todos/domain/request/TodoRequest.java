@@ -10,6 +10,11 @@ public class TodoRequest {
     private String title;
     private String content;
     private Long memberId;
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
     public Todo toEntity(){
         Member member = Member.builder()
                 .id(memberId)
