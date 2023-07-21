@@ -45,6 +45,7 @@ class TodoControllerTest {
         @Test
         @DisplayName("성공")
         void insert() throws Exception{
+            List<Todo> before = todoRepository.findAll();
             Map<String, Object> req = new HashMap<>();
             req.put("title", "ttt");
             req.put("content", "ccc");
@@ -57,12 +58,13 @@ class TodoControllerTest {
                     )
                     .andExpect(
                             status().isCreated());
-            List<Todo> all = todoRepository.findAll();
-            assertEquals(all.size(), 3);
+            List<Todo> after = todoRepository.findAll();
+            assertEquals(after.size(), before.size() + 1);
         }
         @Test
         @DisplayName("토큰 실패")
         void insertFail() throws Exception{
+            List<Todo> before = todoRepository.findAll();
             Map<String, Object> req = new HashMap<>();
             req.put("title", "ttt");
             req.put("content", "ccc");
@@ -75,8 +77,8 @@ class TodoControllerTest {
                     .andExpect(
                             status().isBadRequest());
 
-            List<Todo> all = todoRepository.findAll();
-            assertEquals(all.size(), 2);
+            List<Todo> after = todoRepository.findAll();
+            assertEquals(before.size(), after.size());
         }
     }
     @Nested
@@ -116,20 +118,23 @@ class TodoControllerTest {
     /**
      * Params :
      * content = "" , page = 0, size 20 , isDone(default null) , title = ""
-     * likeLoe (Integer) = null, likeGoe (Integer) = null
+     * likeLoe (Integer) = null Less Or Equal
+     * , likeGoe (Integer) = null Greater Or Equal
      * 만약 likeLoe 3 이면 3보다 작거나 같은 것 것들 가져오기 likeCount <= likeLoe
      * 만약 likeGoe 3 이면 3보다 크거나 같은 것 것들 가져오기 likeCount >= likeGoe
      * 만약 likeLoe 3 , likeGoe 5 이면  likeGoe <= likeCount  <= likeLoe
      * 만약 likeLoe 3 , likeGoe 5 이고 content가 t면
      * likeGoe <= likeCount  <= likeLoe and content like "%t%"
      * 만약 likeLoe 3 , likeGoe 5 이고 content가 t 고 title = 1 이면
-     * likeGoe <= likeCount  <= likeLoe and content like "%t%" and title like "%1%"
+     * likeGoe <= likeCount  <= likeLoe and content like "%t%" and title = "1"
+     * title 은 equals 같다 로 찾아와야함
      */
     @Nested
     class 투두_가져오기{
         @Test
         @DisplayName("그냥 가져오기")
         void getDefault() throws Exception{
+            List<Todo> before = todoRepository.findAll();
             mockMvc.perform(
                             get("/api/v1/todos")
                                     .contentType(MediaType.APPLICATION_JSON)
@@ -137,22 +142,23 @@ class TodoControllerTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$.content", hasSize(2)))
+                            jsonPath("$.content", hasSize(20)))
                     .andExpect(
-                            jsonPath("$.content.[0].id").isNotEmpty())
+                            jsonPath("$.content.[0].title")
+                                    .value("a"))
                     .andExpect(
-                            jsonPath("$.content.[0].title").value("t"))
-                    .andExpect(
-                            jsonPath("$.content.[1].id").isNotEmpty())
-                    .andExpect(
-                            jsonPath("$.content.[1].title").value("t2"));
+                            jsonPath("$.content.[0].content")
+                                    .value("a"))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(41))
+            ;
         }
         @Test
         @DisplayName("타이틀로 가져오기")
         void likeTitle() throws Exception{
             mockMvc.perform(
                             get("/api/v1/todos")
-                                    .param("title", "t2")
+                                    .param("title", "t")
                     )
                     .andExpect(
                             status().isOk())
@@ -161,7 +167,13 @@ class TodoControllerTest {
                     .andExpect(
                             jsonPath("$.content.[0].id").isNotEmpty())
                     .andExpect(
-                            jsonPath("$.content.[0].title").value("t2"))
+                            jsonPath("$.content.[0].title")
+                                    .value("t"))
+                    .andExpect(
+                            jsonPath("$.content.[0].content")
+                                    .value("t"))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(1))
             ;
         }
 
@@ -182,7 +194,95 @@ class TodoControllerTest {
                             jsonPath("$.content", hasSize(1)))
                     .andExpect(
                             jsonPath("$.content.[0].title")
-                                    .value(todo1.getTitle()))
+                                    .value("a"))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(1))
+            ;
+        }
+
+        @Test
+        @DisplayName("타이틀 이랑 CONTENT 둘다 있는것")
+        void existTitleAndContent() throws Exception{
+            mockMvc.perform(
+                            get("/api/v1/todos")
+                                    .param("title", "t2")
+                                    .param("content", "t")
+                    )
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.content", hasSize(1)))
+                    .andExpect(
+                            jsonPath("$.content.[0].title")
+                                    .value("t2"))
+                    .andExpect(
+                            jsonPath("$.content.[0].content")
+                                    .value("t2"))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(1))
+            ;
+        }
+
+        @Test
+        @DisplayName("CONTENT 만 있는 것")
+        void existContent() throws Exception{
+            mockMvc.perform(
+                            get("/api/v1/todos")
+                                    .param("content", "t")
+                    )
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.content", hasSize(20)))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(40))
+            ;
+        }
+
+        @Test
+        @DisplayName("goe")
+        void goe() throws Exception{
+            mockMvc.perform(
+                            get("/api/v1/todos")
+                                    .param("likeGoe", "30")
+                    )
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.content", hasSize(10)))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(10))
+            ;
+        }
+        @Test
+        @DisplayName("loe")
+        void loe() throws Exception{
+            mockMvc.perform(
+                            get("/api/v1/todos")
+                                    .param("likeLoe", "5")
+                    )
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.content", hasSize(6)))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(6))
+            ;
+        }
+        @Test
+        @DisplayName("loeAndGoe")
+        void loeAndGoe() throws Exception{
+            mockMvc.perform(
+                            get("/api/v1/todos")
+                                    .param("likeGoe", "10")
+                                    .param("likeGoe", "15")
+                    )
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.content", hasSize(6)))
+                    .andExpect(jsonPath("$.totalElements")
+                            .value(6))
             ;
         }
     }
@@ -211,13 +311,16 @@ class TodoControllerTest {
 
         this.member = memberRepository.save(member);
         this.todo = todoRepository.save(
-                new Todo(null, "t", "t"
+                new Todo(null, "a", "a"
                         , false, 0, member)
         );
-        todoRepository.save(
-                new Todo(null, "t2","t2"
-                        , false,0, member)
-        );
+        for (int i = 0; i < 40; i++) {
+            todoRepository.save(
+                    new Todo(null, "t" + i,"t" + i
+                            , false, i, member)
+            );
+        }
+
         MemberLogin entity = new MemberLogin(this.member, LocalDateTime.now());
         memberLoginRepository.save(entity);
         entityManager.flush();
