@@ -11,12 +11,14 @@ import com.example.demo.members.service.MemberService;
 import com.example.demo.todos.domain.entity.Todo;
 import com.example.demo.todos.repository.TodoRepository;
 import com.querydsl.core.QueryFactory;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,13 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
+@Transactional
 class DemoApplicationTests {
-	@Autowired
-	MemberRepository memberRepository;
-	@Autowired
-	MemberLoginRepository memberLoginRepository;
-	@Autowired
-	EntityManager em;
 
 
 	@Test @Transactional
@@ -44,14 +41,32 @@ class DemoApplicationTests {
 	@Test
 	void test(){
 		QMember member = new QMember("m");
-		JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		// select m from member m
+		// where name = null
+		String name = "a";
+		BooleanExpression nameEq = name != null ? member.name.eq(name) : null;
+		member.name.like("%"+name+"%");
+		Integer age = 20;
+		BooleanExpression ageLoe = age == null ? null : member.age.loe(age);
 		JPAQuery<Member> from = queryFactory
 				.select(member)
-				.from(member);
+				.from(member)
+				.where(
+						nameEq, ageLoe
+				)
+				;
 		List<Member> fetch = from.fetch();
 		System.out.println();
 
 	}
+
+	@Test
+	void test2(){
+//		select member from member where age <= 10 and age > 5 and name = "na"
+	}
+
+
 
 
 	@Autowired
@@ -68,6 +83,7 @@ class DemoApplicationTests {
 	@Autowired
 	MemberService memberService;
 	String token;
+	Todo todo;
 	@BeforeEach
 	void init(){
 		Member member =
