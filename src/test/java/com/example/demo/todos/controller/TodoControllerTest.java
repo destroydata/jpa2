@@ -116,15 +116,15 @@ class TodoControllerTest {
     }
 
     /**
-     * Params :
+     * Params
      * content = "" , page = 0, size 20 , isDone(default null) , title = ""
      * likeLoe (Integer) = null Less Or Equal
      * , likeGoe (Integer) = null Greater Or Equal
      * 만약 likeLoe 3 이면 3보다 작거나 같은 것 것들 가져오기 likeCount <= likeLoe
-     * 만약 likeGoe 3 이면 3보다 크거나 같은 것 것들 가져오기 likeCount >= likeGoe
-     * 만약 likeLoe 3 , likeGoe 5 이면  likeGoe <= likeCount  <= likeLoe
-     * 만약 likeLoe 3 , likeGoe 5 이고 content가 t면
-     * likeGoe <= likeCount  <= likeLoe and content like "%t%"
+     *      * 만약 likeGoe 3 이면 3보다 크거나 같은 것 것들 가져오기 likeCount >= likeGoe
+     *      * 만약 likeLoe 3 , likeGoe 5 이면  likeGoe <= likeCount  <= likeLoe
+     *      * 만약 likeLoe 3 , likeGoe 5 이고 content가 t면
+     *      * likeGoe <= likeCount  <= likeLoe and content like "%t%"
      * 만약 likeLoe 3 , likeGoe 5 이고 content가 t 고 title = 1 이면
      * likeGoe <= likeCount  <= likeLoe and content like "%t%" and title = "1"
      * title 은 equals 같다 로 찾아와야함
@@ -134,7 +134,6 @@ class TodoControllerTest {
         @Test
         @DisplayName("그냥 가져오기")
         void getDefault() throws Exception{
-            List<Todo> before = todoRepository.findAll();
             mockMvc.perform(
                             get("/api/v1/todos")
                                     .contentType(MediaType.APPLICATION_JSON)
@@ -274,7 +273,7 @@ class TodoControllerTest {
         void loeAndGoe() throws Exception{
             mockMvc.perform(
                             get("/api/v1/todos")
-                                    .param("likeGoe", "10")
+                                    .param("likeLoe", "10")
                                     .param("likeGoe", "15")
                     )
                     .andExpect(
