@@ -8,18 +8,22 @@ import com.example.demo.members.domain.request.LoginRequest;
 import com.example.demo.members.domain.response.LoginResponse;
 import com.example.demo.members.repository.MemberRepository;
 import com.example.demo.members.service.MemberService;
+import com.example.demo.todos.domain.dto.TodoCondition;
 import com.example.demo.todos.domain.entity.QTodo;
 import com.example.demo.todos.domain.entity.Todo;
 import com.example.demo.todos.repository.TodoRepository;
 import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -39,7 +43,8 @@ class DemoApplicationTests {
 	@Test
 	void test(){
 		QMember member = new QMember("m");
-		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		JPAQueryFactory queryFactory =
+				new JPAQueryFactory(entityManager);
 		// select m from member m
 		// where name = null
 		String name = "a";
@@ -52,8 +57,7 @@ class DemoApplicationTests {
 				.from(member)
 				.where(
 						nameEq, ageLoe
-				)
-				;
+				);
 		List<Member> fetch = from.fetch();
 		System.out.println();
 
@@ -92,7 +96,8 @@ class DemoApplicationTests {
 	@Test
 	void test5(){
 		QMember qMember = QMember.member;
-		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		JPAQueryFactory queryFactory =
+				new JPAQueryFactory(entityManager);
 		List<String> vv = queryFactory
 				.select(qMember.name
 						.concat("님 ")
@@ -175,9 +180,70 @@ class DemoApplicationTests {
 	@Test
 	void test9(){
 		QMember qMember = QMember.member;
+
+// 상태 정지 가는중 대기중
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		queryFactory.select(
+				qMember.age.sum(),
+				qMember.age.avg())
+				.from(qMember);
+		queryFactory
+				.select(qMember)
+				.from(qMember)
+				.where(qMember.id.in(
+						JPAExpressions.select(QTodo.todo.member.id)
+								.from(QTodo.todo)
+								.where(QTodo.todo.content.contains("t"))
+				))
+		;
 //		select case when m.age >=10 and m.age< 20 then '10대'
+		String s = queryFactory.select(
+				new CaseBuilder()
+						.when(qMember.age.between(10, 20))
+						.then("10대")
+						.otherwise("노인")
+						.as("hi")
+		).from(qMember).fetchOne();
+		System.out.println(s);
 
 
+	}
+	QMember qMember = QMember.member;
+	QTodo qTodo = QTodo.todo;
+	@Test
+	void test10(){
+		// init data , given
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		TodoCondition condition = TodoCondition.builder()
+				.build();
+		PageRequest request = PageRequest.of(0,20);
+
+
+		JPAQuery<Todo> limit = queryFactory
+				.select(qTodo)
+				.from(qTodo)
+				.leftJoin(qTodo.member, qMember)
+				.fetchJoin()
+				.where(
+						contentContains(condition.getContent()),
+						titleEq(condition.getTitle())
+				)
+				.offset(request.getPageNumber())
+				.limit(request.getPageSize());
+		List<Todo> fetch = limit.fetch();
+		Assertions.assertEquals(fetch.size(),20);
+	}
+
+	private BooleanExpression contentContains(String content) {
+		return content == null
+				? null
+				: qTodo.content.contains(content);
+	}
+
+	private BooleanExpression titleEq(String title) {
+		return title == null
+				? null
+				: qTodo.title.eq(title);
 	}
 
 	@Autowired
@@ -227,5 +293,7 @@ class DemoApplicationTests {
 		memberLoginRepository.deleteAll();
 		memberRepository.deleteAll();
 	}
+
+
 
 }

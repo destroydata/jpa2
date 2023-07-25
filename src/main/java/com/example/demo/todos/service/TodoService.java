@@ -2,13 +2,18 @@ package com.example.demo.todos.service;
 
 import com.example.demo.config.service.MemberLoginService;
 import com.example.demo.members.domain.entity.Member;
+import com.example.demo.todos.domain.dto.TodoCondition;
 import com.example.demo.todos.domain.entity.Todo;
 import com.example.demo.todos.domain.request.TodoRequest;
+import com.example.demo.todos.domain.response.TodoResponse;
+import com.example.demo.todos.repository.CustomTodoRepositoryImpl;
 import com.example.demo.todos.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,4 +40,14 @@ public class TodoService {
             throw new RuntimeException("MEMBER NOT FOUND");
         todo.changeIsDone();
     }
+    @Transactional(readOnly = true)
+    public List<TodoResponse> getAll(
+            PageRequest request, TodoCondition condition){
+        List<Todo> allByCondition = todoRepository
+                .findAllByCondition(request, condition);
+        return allByCondition.stream().map(TodoResponse::new).toList();
+    }
+
+
+
 }
