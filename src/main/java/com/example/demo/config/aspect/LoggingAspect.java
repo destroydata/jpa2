@@ -39,17 +39,17 @@ public class LoggingAspect {
 //        return proceed;
 //    }
 
-//    @Around("execution(* com.example.demo.members.*.*.*(..))")
-//    public Object loggingAround1(ProceedingJoinPoint point) throws Throwable {
-//        long startTime = new Date().getTime();
-//        log.info("start : " + point.getSignature().getName()
-//                + ", " + point.getSignature().getDeclaringTypeName());
-//        Object proceed = point.proceed();
-//        log.info("after : " + point.getSignature().getName()
-//                + ", " + point.getSignature().getDeclaringTypeName());
-//        log.info("ms : " + (new Date().getTime() - startTime));
-//        return proceed;
-//    }
+    @Around("execution(* com.example.demo.todos.service.*.*(..))")
+    public Object loggingAround1(ProceedingJoinPoint point) throws Throwable {
+        long startTime = new Date().getTime();
+        log.info("start : " + point.getSignature().getName()
+                + ", " + point.getSignature().getDeclaringTypeName());
+        Object proceed = point.proceed();
+        log.info("after : " + point.getSignature().getName()
+                + ", " + point.getSignature().getDeclaringTypeName());
+        log.info("ms : " + (new Date().getTime() - startTime));
+        return proceed;
+    }
 
 //    @Around("@annotation(org.springframework.stereotype.Service)")
 //    public Object loggingAround2(ProceedingJoinPoint point) throws Throwable {

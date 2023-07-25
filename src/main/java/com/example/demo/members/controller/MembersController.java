@@ -41,7 +41,7 @@ public class MembersController {
             @RequestBody SignupRequest request){
         service.insert(request);
     }
-
+// 몇살 이상 이하 성으로 찾기
     @GetMapping
     @TokenRequired
     public Map<String , Object> getAll(

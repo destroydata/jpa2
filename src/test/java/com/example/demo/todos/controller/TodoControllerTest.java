@@ -313,13 +313,12 @@ class TodoControllerTest {
                 new Todo(null, "a", "a"
                         , false, 0, member)
         );
-        for (int i = 0; i < 40; i++) {
-            todoRepository.save(
-                    new Todo(null, "t" + i,"t" + i
-                            , false, i, member)
-            );
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            todos.add(new Todo(null, "t" + i,"t" + i
+                    , false, i, member));
         }
-
+        todoRepository.saveAll(todos);
         MemberLogin entity = new MemberLogin(this.member, LocalDateTime.now());
         memberLoginRepository.save(entity);
         entityManager.flush();
