@@ -3,6 +3,8 @@ package com.example.demo.todos.repository;
 
 import com.example.demo.todos.domain.dto.TodoCondition;
 import com.example.demo.todos.domain.entity.Todo;
+import com.example.demo.todos.domain.response.QTodoResponse;
+import com.example.demo.todos.domain.response.TodoResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,12 +21,12 @@ public class CustomTodoRepositoryImpl
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Todo> findAllByCondition(
+    public Page<TodoResponse> findAllByCondition(
             PageRequest request,
             TodoCondition condition
     ){
-        JPAQuery<Todo> query = queryFactory
-                .select(todo)
+        JPAQuery<TodoResponse> query = queryFactory
+                .select(new QTodoResponse(todo))
                 .from(todo)
                 .leftJoin(todo.member, member)
                 .fetchJoin()
@@ -37,7 +39,7 @@ public class CustomTodoRepositoryImpl
                 )
                 .offset(request.getPageNumber())
                 .limit(request.getPageSize());
-        List<Todo> content = query.fetch();
+        List<TodoResponse> content = query.fetch();
         Long totalSize = queryFactory
                 .select(todo.count())
                 .from(todo)

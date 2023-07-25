@@ -44,10 +44,12 @@ public class TodoService {
     @Transactional(readOnly = true)
     public Page<TodoResponse> getAll(
             PageRequest request, TodoCondition condition){
-        Page<Todo> allByCondition = todoRepository
+//        Page<Todo> allByCondition = todoRepository
+//                .findAllByCondition(request, condition);
+//        return allByCondition
+//                .map(TodoResponse::new);
+        return todoRepository
                 .findAllByCondition(request, condition);
-        return allByCondition
-                .map(TodoResponse::new);
     }
 
 
