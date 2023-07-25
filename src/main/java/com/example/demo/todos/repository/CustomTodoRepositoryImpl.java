@@ -8,6 +8,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class CustomTodoRepositoryImpl
     private final QMember qMember = QMember.member;
 
     @Override
-    public List<Todo> findAllByCondition(
+    public Page<Todo> findAllByCondition(
             PageRequest request,
             TodoCondition condition
     ){
@@ -36,7 +38,16 @@ public class CustomTodoRepositoryImpl
                 )
                 .offset(request.getPageNumber())
                 .limit(request.getPageSize());
-        return query.fetch();
+        List<Todo> content = query.fetch();
+        Long totalSize = queryFactory
+                .select(qTodo.count())
+                .from(qTodo)
+                .where(
+                        contentContains(condition.getContent()),
+                        titleEq(condition.getTitle())
+                )
+                .fetchOne();
+        return new PageImpl<>(content, request, totalSize);
     }
 
     private BooleanExpression contentContains(String content) {

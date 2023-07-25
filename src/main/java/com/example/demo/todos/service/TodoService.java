@@ -9,6 +9,7 @@ import com.example.demo.todos.domain.response.TodoResponse;
 import com.example.demo.todos.repository.CustomTodoRepositoryImpl;
 import com.example.demo.todos.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,11 +42,12 @@ public class TodoService {
         todo.changeIsDone();
     }
     @Transactional(readOnly = true)
-    public List<TodoResponse> getAll(
+    public Page<TodoResponse> getAll(
             PageRequest request, TodoCondition condition){
-        List<Todo> allByCondition = todoRepository
+        Page<Todo> allByCondition = todoRepository
                 .findAllByCondition(request, condition);
-        return allByCondition.stream().map(TodoResponse::new).toList();
+        return allByCondition
+                .map(TodoResponse::new);
     }
 
 
