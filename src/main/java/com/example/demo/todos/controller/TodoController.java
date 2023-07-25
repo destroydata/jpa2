@@ -56,6 +56,7 @@ public class TodoController {
                     , defaultValue = "20") Integer size,
             TodoCondition condition
     ){
+
         return todoService.getAll(
                 PageRequest.of(page, size),
                 condition);

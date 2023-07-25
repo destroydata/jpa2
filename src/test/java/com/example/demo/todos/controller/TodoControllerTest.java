@@ -263,9 +263,9 @@ class TodoControllerTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$.content", hasSize(6)))
+                            jsonPath("$.content", hasSize(7)))
                     .andExpect(jsonPath("$.totalElements")
-                            .value(6))
+                            .value(7))
             ;
         }
         @Test
@@ -273,8 +273,8 @@ class TodoControllerTest {
         void loeAndGoe() throws Exception{
             mockMvc.perform(
                             get("/api/v1/todos")
-                                    .param("likeLoe", "10")
-                                    .param("likeGoe", "15")
+                                    .param("likeGoe", "10")
+                                    .param("likeLoe", "15")
                     )
                     .andExpect(
                             status().isOk())

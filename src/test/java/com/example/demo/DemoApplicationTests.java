@@ -213,7 +213,8 @@ class DemoApplicationTests {
 	@Test
 	void test10(){
 		// init data , given
-		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		JPAQueryFactory queryFactory =
+				new JPAQueryFactory(entityManager);
 		TodoCondition condition = TodoCondition.builder()
 				.build();
 		PageRequest request = PageRequest.of(0,20);
